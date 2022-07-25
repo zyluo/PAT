@@ -39,19 +39,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.-->
 		<all-nodes-memory>no</all-nodes-memory>
 	</pdf>
 	<excel enable='yes'>
-		<cpu>yes</cpu>
-		<disk>yes</disk>
-		<net>yes</net>
-		<perf>yes</perf>
-		<memory>yes</memory>
+		<cpu>{{ ('cpustat' in INSTRUMENTS.split()) | ternary('yes', 'no') }}</cpu>
+		<disk>{{ ('iostat' in INSTRUMENTS.split()) | ternary('yes', 'no') }}</disk>
+		<net>{{ ('netstat' in INSTRUMENTS.split()) | ternary('yes', 'no') }}</net>
+		<perf>{{ ('perf' in INSTRUMENTS.split()) | ternary('yes', 'no') }}</perf>
+		<memory>{{ ('memstat' in INSTRUMENTS.split()) | ternary('yes', 'no') }}</memory>
 	</excel>
 	<csv-format enable='yes'>
-		<csv-cpu>yes</csv-cpu>
-		<csv-disk>yes</csv-disk>
-		<csv-net>yes</csv-net>
-		<csv-perf>yes</csv-perf>
-		<csv-memory>yes</csv-memory>
+		<csv-cpu>{{ ('cpustat' in INSTRUMENTS.split()) | ternary('yes', 'no') }}</csv-cpu>
+		<csv-disk>{{ ('iostat' in INSTRUMENTS.split()) | ternary('yes', 'no') }}</csv-disk>
+		<csv-net>{{ ('netstat' in INSTRUMENTS.split()) | ternary('yes', 'no') }}</csv-net>
+		<csv-perf>{{ ('perf' in INSTRUMENTS.split()) | ternary('yes', 'no') }}</csv-perf>
+		<csv-memory>{{ ('memstat' in INSTRUMENTS.split()) | ternary('yes', 'no') }}</csv-memory>
 	</csv-format>
-    <source>/foo/bar/instruments/</source>
+    <source>{{ playbook_dir }}/results/{{ JOB_ID }}/instruments/</source>
     <exclude-node>exclude-node</exclude-node>
 </post-config>

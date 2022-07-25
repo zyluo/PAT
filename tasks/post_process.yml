@@ -44,3 +44,19 @@
     path: "{{ WORKER_TMP_DIR }}/{{ item }}"
     state: absent
   loop: "{{ INSTRUMENTS.split() }}"
+
+- block:
+    - name: configure xml file
+      ansible.builtin.template:
+        src: config.xml.j2
+        dest: "{{ playbook_dir }}/results/{{ JOB_ID }}/config.xml"
+        mode: '0644'
+
+    - name: Run a script using an executable in a system path
+      ansible.builtin.script: PAT-post-processing/pat-post-process.py {{ playbook_dir }}/results/{{ JOB_ID }}/config.xml
+      args:
+        executable: python3
+      environment:
+        PYTHONPATH: "{{ role_path }}/files/PAT-post-processing"
+  delegate_to: localhost
+  run_once: true

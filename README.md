@@ -34,12 +34,26 @@ Figure 4: Perf module
 Requirements
 ------------
 
+* Install packages for matplotlib
+
+**_(Fedora / CentOS / RHEL)_**
+
+```bash
+sudo dnf install freetype-devel python38-devel gcc gcc-c++
+```
+
+**_(Debian / Ubuntu)_**
+
+```bash
+sudo apt-get install libfreetype6-dev python3-dev gcc g++
+```
+
 * pip packages listed in [requirements.txt](https://github.com/zyluo/PAT/blob/ansible_role/requirements.txt).
 
 ```bash
 python3.8 -m venv ansible-venv
 source ansible-venv/bin/activate
-python -m pip install --upgrade pip
+python -m pip install --upgrade pip wheel Cython
 python -m pip install -r https://raw.githubusercontent.com/zyluo/PAT/ansible_role/requirements.txt
 ```
 

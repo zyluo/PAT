@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 #
 # Copyright (c) 2015, Intel Corporation
 # 
@@ -95,7 +95,11 @@ class Perf(pat_base):
     def normalize(self, cpu_obj):
         """Look up %idle inside the cpu for the same timestamp and normalize \
         sum of cycles"""
-        idle_dict = dict(zip(cpu_obj.time_stamp_array, cpu_obj.idle_percent))
+        time_stamp_set = set(cpu_obj.time_stamp_array)
+        idle_dict = {}
+        for time_stamp in time_stamp_set:
+            index = cpu_obj.time_stamp_array.index(time_stamp)
+            idle_dict[time_stamp] = cpu_obj.idle_percent[index]
         for self.ind, self.row in enumerate(self.data_array):
             try:
                 self.ts = int(self.row[1])
@@ -530,7 +534,7 @@ def write_excel(cluster, wb):
 def csv_writer(cluster, csv_path_perf):  
     """write data to a CSV file path""" 
 
-    csv_file = open(csv_path_perf, "wb")
+    csv_file = open(csv_path_perf, "w")
 
     for node in cluster:
         if hasattr(node, 'perf_obj'):
