@@ -44,3 +44,11 @@
     path: "{{ WORKER_TMP_DIR }}/{{ item }}"
     state: absent
   loop: "{{ INSTRUMENTS.split() }}"
+
+- name: upload files to azure blob storage
+  ansible.builtin.script: azure_blob_storage.py {{ JOB_ID }} {{ playbook_dir }}/results/{{ JOB_ID }}/instruments
+  args:
+    executable: python3
+  when: lookup('env', "AZURE_STORAGE_CONNECTION_STRING") | length > 0
+  delegate_to: localhost
+  run_once: true
