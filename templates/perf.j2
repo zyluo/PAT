@@ -25,44 +25,38 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+SAMPLING_INTERVAL={{ SAMPLE_RATE }}
 CMD=$1
 
 function run()
 {
-  rm -rf perf_tmp
-  mkdir perf_tmp
+	rm -rf perf_tmp
+	mkdir perf_tmp
 
-  echo $BASHPID > {{ WORKER_TMP_DIR }}/perf.pid
+	echo $BASHPID > {{ WORKER_TMP_DIR }}/perf.pid
 
-  while :
-  do
-    [ ! -f {{ WORKER_TMP_DIR }}/perf.pid ] && break
-    perf record -a -F 1000 -o perf_tmp/$(date +%s) sleep 5
-    sleep {{ SAMPLE_RATE }}
-  done
+	while(true)do
+		[ ! -f {{ WORKER_TMP_DIR }}/perf.pid ] && break
+		perf record -a -F 1000 -o perf_tmp/$(date +%s) sleep 5
+		sleep $SAMPLING_INTERVAL
+	done
 }
 
 function post-process()
 {
-  if [ ! -d "./perf_tmp" ]
-  then
-    return
-  fi
-
-  for i in $(ls perf_tmp)
-  do
-    (perf report -i perf_tmp/$i 2>/dev/null) 1>&1 | awk -v outfile=$i -v host=$(hostname) '
-    (NF && !/^#/) {
-      if ($1 >= 0.01)
-        print host, outfile, $0
-    }' | sed -e 's/\s\+//7g' -e 's/%//g'
-  done
-
-  rm -rf perf_tmp
-  rm -rf /tmp/perf-*.map
+	if [ ! -d "./perf_tmp" ]; then return; fi
+	for i in $(ls -r perf_tmp); do
+		rm -f ./perf_tmp/$i # remove last perf output file
+		break
+	done
+	for i in $(ls perf_tmp); do
+		(perf report -i perf_tmp/$i 2>/dev/null) 1>&1 | awk -v outfile=$i -v host=$(hostname) '(!/^#/ && !/^$/){if($1 >= 0.01)print host,outfile,$0 }' | sed -e 's/\s\+//7g' -e 's/%//g'
+	done
+	rm -rf perf_tmp
+	rm -rf /tmp/perf-*.map
 }
 
 case $CMD in
-  "run") run ;;
-  "post-process") post-process ;;
+	"run") run ;;
+	"post-process") post-process ;;
 esac
