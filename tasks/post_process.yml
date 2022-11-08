@@ -10,6 +10,11 @@
       ansible.builtin.copy:
         src: result_templatev1.xlsm
         dest: "{{ playbook_dir }}/results/{{ JOB_ID }}/instruments"
+
+    - name: dump stdout to local file
+      copy:
+        content:  "{{ output.stdout_lines | join('\n') }}"
+        dest: "{{ playbook_dir }}/results/{{ JOB_ID }}/output"
   delegate_to: localhost
   run_once: true
 

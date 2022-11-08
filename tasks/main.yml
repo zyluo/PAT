@@ -13,6 +13,7 @@
       delegate_to: localhost
       run_once: true
       delay: "{{ PRE_EXEC_DELAY }}"
+      register: output
 
     - name: delay after running the workload
       ansible.builtin.pause:
